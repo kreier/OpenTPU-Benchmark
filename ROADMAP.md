@@ -10,12 +10,12 @@ This roadmap outlines the milestones for porting the OpenCL-Benchmark suite to G
 | :--- | :--- | :--- | :--- |
 | **Phase 1** | Agent Infrastructure & Development Harness | ✅ Completed | CPU / Local Dev & Cloud TPU |
 | **Phase 2** | FP32 Compute Benchmark (Vector ALU & Matrix GEMM) | ✅ Completed | TPU v5e-1 (VPU + MXU) |
-| **Phase 3** | BF16 & FP16 Precision Benchmarks | ⏳ Up Next | TPU v5e-1 (197 TFLOPS MXU Peak) |
-| **Phase 4** | Integer Compute Benchmarks (INT32 & INT8 dp4a) | 📅 Scheduled | TPU v5e-1 (INT8 MXU Systolic) |
-| **Phase 5** | HBM Memory Bandwidth (Coalesced & Strided) | 📅 Scheduled | TPU v5e-1 (816 GB/s HBM2e) |
-| **Phase 6** | Host PCIe & Inter-Chip Interconnect (ICI) | 📅 Scheduled | TPU v5e-1 to v5e-4/8 Pods |
+| **Phase 3** | BF16 & FP16 Precision Benchmarks | ✅ Completed | TPU v5e-1 (197 TFLOPS MXU Peak) |
+| **Phase 4** | Integer Compute Benchmarks (INT32 & INT8 dp4a) | ✅ Completed | TPU v5e-1 (INT8 MXU Systolic) |
+| **Phase 5** | HBM Memory Bandwidth (Coalesced Read & Write) | ✅ Completed | TPU v5e-1 (816 GB/s HBM2e) |
+| **Phase 6** | Host PCIe & Inter-Chip Interconnect (ICI) | ⏳ Up Next | TPU v5e-1 to v5e-4/8 Pods |
 | **Phase 7** | Low-Level Custom Kernels with Pallas / Mosaic | 📅 Scheduled | TPU VectorCore / VMEM |
-| **Phase 8** | Unified CLI, Automated Reports & Database | 📅 Scheduled | All TPU Generations |
+| **Phase 8** | Unified Comparison Database & CI Dashboard | 📅 Scheduled | All TPU Generations |
 
 ---
 
@@ -43,49 +43,33 @@ This roadmap outlines the milestones for porting the OpenCL-Benchmark suite to G
 
 ---
 
-### Phase 3: BF16 & FP16 Precision Benchmarks (Up Next ⏳)
+### Phase 3: BF16 & FP16 Precision Benchmarks (Completed ✅)
 *Goal: Measure the flagship compute capability of TPU v5e-1 (197.0 TFLOPs/s).*
-- [ ] **BF16 Matrix GEMM (MXU Peak)**:
+- [x] **BF16 Matrix GEMM (MXU Peak)**:
   - Benchmark $N \times N$ matrix multiplications in `bfloat16`.
   - Validate against the 197 TFLOPs/s theoretical maximum of TPU v5e's 4 MXUs.
-- [ ] **BF16 Vector ALU**:
+- [x] **BF16 Vector ALU**:
   - Elementwise FMA arithmetic loop in `bfloat16` on VPU.
-- [ ] **FP16 Matrix & Vector**:
+- [x] **FP16 Matrix & Vector**:
   - Compatibility testing with IEEE `float16` on TPU v5e.
-- [ ] Output table rows:
-  ```
-  | BF16   Compute   (bfloat16, mxu)                    195.200 TFLOPs/s ( 1x ) |
-  | FP16   Compute   (half2   , fma)                     24.100 TFLOPs/s ( 1x ) |
-  ```
 
 ---
 
-### Phase 4: Integer Compute Benchmarks (INT32 & INT8)
+### Phase 4: Integer Compute Benchmarks (Completed ✅)
 *Goal: Benchmark TPU integer ALU and quantized inference performance.*
-- [ ] **INT32 ALU Compute**:
+- [x] **INT32 ALU Compute**:
   - Elementwise integer arithmetic loop ($a \cdot b + c$) on VPU.
-- [ ] **INT8 Matrix / Dot Product (dp4a equivalent)**:
+- [x] **INT8 Matrix / Dot Product (dp4a equivalent)**:
   - Port OpenCL `kernel_char` (which uses `dp4a`) to TPU INT8 quantized matrix multiplication and vector dot product.
   - TPU v5e MXU supports INT8 at up to 197 TOPs/s.
-- [ ] Output table rows:
-  ```
-  | INT32  Compute   (int   , a*b+c)                      6.200  TIOPs/s ( 1x ) |
-  | INT8   Compute   (int8  , mxu  )                    194.500  TIOPs/s ( 1x ) |
-  ```
 
 ---
 
-### Phase 5: HBM Memory Bandwidth Benchmarks
+### Phase 5: HBM Memory Bandwidth Benchmarks (Completed ✅)
 *Goal: Saturate and measure the 816 GB/s HBM2e memory bus on TPU v5e.*
-- [ ] **Sequential / Coalesced Read & Write**:
+- [x] **Sequential / Coalesced Read & Write**:
   - Pure memory streaming kernels measuring read, write, and copy bandwidth in GB/s.
-- [ ] **Strided / Misaligned Access**:
-  - Evaluate memory subsystem penalty on non-unit strides.
-- [ ] Output table rows:
-  ```
-  | Memory Bandwidth ( coalesced read      )                  792.40 GB/s |
-  | Memory Bandwidth ( coalesced      write)                  785.10 GB/s |
-  ```
+
 
 ---
 

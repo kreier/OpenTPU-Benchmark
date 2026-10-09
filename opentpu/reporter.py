@@ -3,6 +3,7 @@ import math
 from typing import List, Optional
 from opentpu.device_info import TPUPlatformInfo
 from opentpu.benchmarks.fp32 import BenchmarkResult
+from opentpu.benchmarks.memory import MemoryBenchmarkResult
 
 FRACTION_VALUES = [
     1.0 / 64.0, 1.0 / 32.0, 1.0 / 24.0, 1.0 / 16.0, 1.0 / 12.0,
@@ -48,13 +49,24 @@ def print_banner(info: TPUPlatformInfo):
 def print_result_row(result: BenchmarkResult, theoretical_peak_tflops: float):
     percentage = (result.tflops_per_sec / theoretical_peak_tflops * 100.0) if theoretical_peak_tflops > 0 else 0.0
     frac_str = format_fraction(percentage)
+    unit = " TIOPs/s" if "INT" in result.precision else "TFLOPs/s"
     
-    # Format matching: | FP32   Compute   (float , fma  )                      12.300 TFLOPs/s ( 1x ) |
     label = f"{result.precision.ljust(7)} Compute   ({result.operation})"
-    tflops_str = f"{result.tflops_per_sec:10.3f} TFLOPs/s"
-    
-    # Inner width = 77 chars: label (32) + space + tflops_str (20) + space + frac (7)
-    content = f"{label}   {tflops_str:>26} {frac_str}"
+    val_str = f"{result.tflops_per_sec:10.3f} {unit}"
+    content = f"{label}   {val_str:>26} {frac_str}"
+    print(format_cell(content))
+
+
+def print_unsupported_row(precision: str, operation: str, reason: str = "not supported"):
+    label = f"{precision.ljust(7)} Compute   ({operation})"
+    content = f"{label}                      {reason:>13}        "
+    print(format_cell(content))
+
+
+def print_memory_row(result: MemoryBenchmarkResult):
+    label = f"Memory Bandwidth ({result.operation})"
+    bw_str = f"{result.bandwidth_gb_per_sec:10.2f} GB/s"
+    content = f"{label:<45}{bw_str:>32}"
     print(format_cell(content))
 
 
