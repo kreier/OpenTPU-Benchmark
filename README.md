@@ -10,11 +10,14 @@ For the complete development and precision roadmap, see [ROADMAP.md](ROADMAP.md)
 Inside a Google Colab notebook with a TPU runtime (e.g. TPU v5e / v5 lite):
 
 ```bash
-# Option A: Direct install and run (Recommended for Colab)
-!pip install -q git+https://github.com/kreier/OpenTPU-Benchmark.git
+# Option A: Fastest 1-Liner (Downloads ~36 KiB binary and runs immediately in <1s)
+!curl -sSL https://raw.githubusercontent.com/kreier/OpenTPU-Benchmark/master/run_colab.sh | bash
+
+# Option B: Direct install via pip (instant with --no-deps)
+!pip install -q --no-deps git+https://github.com/kreier/OpenTPU-Benchmark.git
 !opentpu
 
-# Option B: Download standalone release binary with wget
+# Option C: Download release binary with wget
 !wget -q https://github.com/kreier/OpenTPU-Benchmark/releases/latest/download/OpenTPU-Benchmark && chmod +x OpenTPU-Benchmark
 !./OpenTPU-Benchmark
 ```

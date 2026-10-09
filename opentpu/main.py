@@ -1,4 +1,13 @@
 from __future__ import annotations
+import os
+import warnings
+
+# Suppress XLA C++ warnings (e.g. Invalid stack_frame_id) and TPU init warnings
+os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
+os.environ.setdefault("GLOG_minloglevel", "2")
+warnings.filterwarnings("ignore", message=".*Transparent hugepages.*")
+warnings.filterwarnings("ignore", category=UserWarning, module=".*cloud_tpu_init.*")
+
 import argparse
 import json
 import sys
