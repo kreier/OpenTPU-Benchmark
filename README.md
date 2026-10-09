@@ -1,4 +1,31 @@
-# OpenCL-Benchmark
+# OpenTPU-Benchmark (Google TPU Port)
+
+A high-performance benchmark suite ported from [OpenCL-Benchmark](https://github.com/ProjectPhysX/OpenCL-Benchmark) specifically designed to run on **Google TPUs** (including `TPU v5e-1`, `v4`, `v5p`, and `v6e`) using JAX/XLA, with transparent CPU/GPU fallback.
+
+For agent guidelines and developer workflows, see [AGENTS.md](AGENTS.md).  
+For the complete development and precision roadmap, see [ROADMAP.md](ROADMAP.md).
+
+## Quick Start on Google Cloud TPU (e.g. v5e-1)
+
+```bash
+# 1. Clone repository
+git clone https://github.com/kreier/OpenTPU-Benchmark.git
+cd OpenTPU-Benchmark
+
+# 2. Run setup on TPU VM (installs jax[tpu] and dependencies)
+chmod +x setup_tpu.sh make_tpu.sh
+./setup_tpu.sh
+
+# 3. Execute benchmark
+./make_tpu.sh
+
+# Or for machine-readable JSON output (ideal for agents):
+./make_tpu.sh --json
+```
+
+---
+
+# Original OpenCL-Benchmark
 
 A small [OpenCL](https://github.com/ProjectPhysX/OpenCL-Wrapper "OpenCL-Wrapper") benchmark program to measure peak GPU/CPU performance.
 

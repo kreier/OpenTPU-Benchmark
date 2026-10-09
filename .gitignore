@@ -1,3 +1,11 @@
 bin/
 .vs/
 OpenCL-Benchmark.vcxproj.user
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+*.log

@@ -1,0 +1,5 @@
+# TPU-specific installation instructions:
+# Run: pip install -r requirements-tpu.txt -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
+jax[tpu]>=0.4.30
+numpy>=1.26.0
+pytest>=8.0.0
