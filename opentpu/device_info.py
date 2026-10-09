@@ -16,6 +16,16 @@ class DeviceSpec:
 
 # Known Google TPU specs (per single chip / core)
 KNOWN_SPECS: Dict[str, DeviceSpec] = {
+    "tpu v5 lite": DeviceSpec(
+        name="Google TPU v5e (v5 lite)",
+        architecture="Viperfish (v5e / v5 lite)",
+        tflops_fp32_vpu=12.3,      # Vector Processing Unit FP32 peak (~12.3 TFLOPS)
+        tflops_bf16_mxu=197.0,     # Matrix Multiply Unit BF16 peak (197 TFLOPS)
+        tflops_fp64=0.0,           # Hardware FP64 not supported in MXU
+        hbm_capacity_gb=16.0,      # 16 GB HBM2e
+        hbm_bandwidth_gbs=816.0,   # 816 GB/s
+        interconnect_gbps=400.0,   # 400 Gbps ICI
+    ),
     "tpu v5e": DeviceSpec(
         name="Google TPU v5e",
         architecture="Viperfish (v5e)",

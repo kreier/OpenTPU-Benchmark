@@ -5,7 +5,21 @@ A high-performance benchmark suite ported from [OpenCL-Benchmark](https://github
 For agent guidelines and developer workflows, see [AGENTS.md](AGENTS.md).  
 For the complete development and precision roadmap, see [ROADMAP.md](ROADMAP.md).
 
-## Quick Start on Google Cloud TPU (e.g. v5e-1)
+## Quick Start in Google Colab (One-Liner)
+
+Inside a Google Colab notebook with a TPU runtime (e.g. TPU v5e / v5 lite):
+
+```bash
+# Option A: Direct install and run (Recommended for Colab)
+!pip install -q git+https://github.com/kreier/OpenTPU-Benchmark.git
+!opentpu
+
+# Option B: Download standalone release binary with wget
+!wget -q https://github.com/kreier/OpenTPU-Benchmark/releases/download/v0.1.0/OpenTPU-Benchmark && chmod +x OpenTPU-Benchmark
+!./OpenTPU-Benchmark
+```
+
+## Quick Start on Google Cloud TPU VM
 
 ```bash
 # 1. Clone repository
@@ -22,6 +36,15 @@ chmod +x setup_tpu.sh make_tpu.sh
 # Or for machine-readable JSON output (ideal for agents):
 ./make_tpu.sh --json
 ```
+
+## Release Build & Packaging
+
+To compile release artifacts locally (standalone executable `dist/OpenTPU-Benchmark`, wheel, and sdist):
+```bash
+./build_release.sh
+```
+Pushed tags matching `v*` (e.g. `v0.1.0`) automatically trigger GitHub Actions to build and publish the release binaries on GitHub Releases.
+
 
 ---
 

@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "opentpu-benchmark"
-version = "1.0.0"
+version = "0.1.0"
 description = "High-performance microbenchmark suite for Google TPUs (v5e, v4, v5p, v6e)"
 readme = "README.md"
 authors = [{ name = "kreier" }]
-license = { text = "MIT" }
+license = "MIT"
 requires-python = ">=3.9"
 dependencies = [
     "jax>=0.4.30",
@@ -17,7 +17,12 @@ dependencies = [
 ]
 
 [project.scripts]
+opentpu = "opentpu.main:main"
 opentpu-benchmark = "opentpu.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["opentpu*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

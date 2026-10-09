@@ -1,4 +1,7 @@
 bin/
+build/
+dist/
+*.egg-info/
 .vs/
 OpenCL-Benchmark.vcxproj.user
 .venv/
