@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Build script for OpenTPU-Benchmark release artifacts (v0.1.0)
+# Build script for OpenTPU-Benchmark release artifacts
 # Produces:
 #   1. dist/OpenTPU-Benchmark (standalone executable zipapp)
-#   2. dist/opentpu_benchmark-0.1.0-py3-none-any.whl (pip wheel)
-#   3. dist/opentpu_benchmark-0.1.0.tar.gz (source distribution)
+#   2. dist/*.whl (pip wheel)
+#   3. dist/*.tar.gz (source distribution)
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

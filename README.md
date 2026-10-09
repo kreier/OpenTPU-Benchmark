@@ -15,7 +15,7 @@ Inside a Google Colab notebook with a TPU runtime (e.g. TPU v5e / v5 lite):
 !opentpu
 
 # Option B: Download standalone release binary with wget
-!wget -q https://github.com/kreier/OpenTPU-Benchmark/releases/download/v0.1.0/OpenTPU-Benchmark && chmod +x OpenTPU-Benchmark
+!wget -q https://github.com/kreier/OpenTPU-Benchmark/releases/latest/download/OpenTPU-Benchmark && chmod +x OpenTPU-Benchmark
 !./OpenTPU-Benchmark
 ```
 
