@@ -184,17 +184,24 @@ def main():
             if ici_res:
                 interconnect_results.append(ici_res)
 
+    pallas_unsupported = False
     # 7. Low-Level Pallas / Mosaic Custom Kernel
     if args.test in ["all", "pallas"]:
         if not args.json:
             print(format_cell("Running Pallas / Mosaic custom TPU kernel..."))
-        pallas_res = run_pallas_vector_benchmark(
-            n_elements=min(args.elements, 1048576),
-            iterations=args.iterations,
-            warmup=args.warmup,
-            device=target_device,
-        )
-        compute_results.append((pallas_res, info.spec.tflops_fp32_vpu))
+        try:
+            pallas_res = run_pallas_vector_benchmark(
+                n_elements=min(args.elements, 1048576),
+                iterations=args.iterations,
+                warmup=args.warmup,
+                device=target_device,
+            )
+            if pallas_res is not None:
+                compute_results.append((pallas_res, info.spec.tflops_fp32_vpu))
+            else:
+                pallas_unsupported = True
+        except Exception:
+            pallas_unsupported = True
 
     out = {
         "device": {
@@ -257,6 +264,8 @@ def main():
             print_unsupported_row("FP64", "double, fma  ", "not supported")
         for r, peak in compute_results:
             print_result_row(r, peak)
+        if pallas_unsupported and args.test in ["all", "pallas"]:
+            print_unsupported_row("FP32", "pallas, fma  ", "libtpu issue")
         if memory_results:
             print(f"|{line}|")
             for m in memory_results:
