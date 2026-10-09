@@ -1,3 +1,4 @@
+import os
 import pytest
 import jax
 from opentpu.device_info import get_platform_info, KNOWN_SPECS
@@ -6,6 +7,8 @@ from opentpu.benchmarks.bf16 import run_bf16_vector_benchmark, run_bf16_gemm_ben
 from opentpu.benchmarks.fp16 import run_fp16_vector_benchmark, run_fp16_gemm_benchmark
 from opentpu.benchmarks.integer import run_int8_gemm_benchmark, run_int32_vector_benchmark
 from opentpu.benchmarks.memory import run_memory_bandwidth_benchmark
+from opentpu.benchmarks.interconnect import run_host_bandwidth_benchmark, estimate_pcie_gen
+from opentpu.results_db import save_benchmark_run
 from opentpu.reporter import format_fraction
 
 def test_device_info_discovery():
@@ -59,6 +62,30 @@ def test_memory_bandwidth_benchmark():
     assert len(mem_res) == 2
     assert mem_res[0].bandwidth_gb_per_sec > 0
     assert mem_res[1].bandwidth_gb_per_sec > 0
+
+def test_host_interconnect_benchmark():
+    host_res = run_host_bandwidth_benchmark(buffer_size_mb=16, iterations=2, warmup=1)
+    assert len(host_res) == 3
+    for r in host_res:
+        assert r.bandwidth_gb_per_sec > 0
+    assert estimate_pcie_gen(30.0) == "Gen4"
+    assert estimate_pcie_gen(60.0) == "Gen5"
+
+def test_results_db(tmp_path):
+    test_file = str(tmp_path / "test_results.json")
+    dummy_data = {
+        "device": {"name": "Test Device", "architecture": "Test Arch"},
+        "compute_benchmarks": [{"operation": "float , fma", "throughput_tflops_or_tiops": 1.0}],
+        "memory_benchmarks": [{"operation": "coalesced read", "bandwidth_gb_per_sec": 500.0}],
+    }
+    saved_path = save_benchmark_run(dummy_data, filepath=test_file)
+    assert os.path.exists(saved_path)
+
+def test_pallas_benchmark():
+    from opentpu.benchmarks.pallas_kernel import run_pallas_vector_benchmark
+    res = run_pallas_vector_benchmark(n_elements=8192, iterations=2, warmup=1, unroll_steps=16)
+    assert res.tflops_per_sec > 0
+    assert "pallas" in res.operation
 
 def test_format_fraction():
     assert format_fraction(100.0) == "( 1x )"

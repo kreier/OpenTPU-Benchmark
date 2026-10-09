@@ -4,6 +4,7 @@ from typing import List, Optional
 from opentpu.device_info import TPUPlatformInfo
 from opentpu.benchmarks.fp32 import BenchmarkResult
 from opentpu.benchmarks.memory import MemoryBenchmarkResult
+from opentpu.benchmarks.interconnect import InterconnectBenchmarkResult
 
 FRACTION_VALUES = [
     1.0 / 64.0, 1.0 / 32.0, 1.0 / 24.0, 1.0 / 16.0, 1.0 / 12.0,
@@ -67,6 +68,18 @@ def print_memory_row(result: MemoryBenchmarkResult):
     label = f"Memory Bandwidth ({result.operation})"
     bw_str = f"{result.bandwidth_gb_per_sec:10.2f} GB/s"
     content = f"{label:<45}{bw_str:>32}"
+    print(format_cell(content))
+
+
+def print_interconnect_row(result: InterconnectBenchmarkResult):
+    prefix = "ICI " if "ICI" in result.name else "PCIe"
+    label = f"{prefix:<7} Bandwidth ({result.operation})"
+    bw_str = f"{result.bandwidth_gb_per_sec:10.2f} GB/s"
+    if result.pcie_gen:
+        gen_str = f"{result.pcie_gen:>12}"
+        content = f"{label:<45}{gen_str}{bw_str:>20}"
+    else:
+        content = f"{label:<45}{bw_str:>32}"
     print(format_cell(content))
 
 

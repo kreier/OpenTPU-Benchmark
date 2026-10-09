@@ -14,4 +14,4 @@ os.environ.setdefault("GLOG_minloglevel", "2")
 warnings.filterwarnings("ignore", message=".*Transparent hugepages.*")
 warnings.filterwarnings("ignore", category=UserWarning, module=".*cloud_tpu_init.*")
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"

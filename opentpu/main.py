@@ -17,10 +17,14 @@ from opentpu.benchmarks.bf16 import run_bf16_gemm_benchmark, run_bf16_vector_ben
 from opentpu.benchmarks.fp16 import run_fp16_gemm_benchmark, run_fp16_vector_benchmark
 from opentpu.benchmarks.integer import run_int8_gemm_benchmark, run_int32_vector_benchmark
 from opentpu.benchmarks.memory import run_memory_bandwidth_benchmark
+from opentpu.benchmarks.interconnect import run_host_bandwidth_benchmark, run_ici_bandwidth_benchmark
+from opentpu.benchmarks.pallas_kernel import run_pallas_vector_benchmark
+from opentpu.results_db import save_benchmark_run
 from opentpu.reporter import (
     print_banner,
     print_result_row,
     print_memory_row,
+    print_interconnect_row,
     print_unsupported_row,
     print_footer,
     format_cell,
@@ -28,7 +32,7 @@ from opentpu.reporter import (
 
 def main():
     parser = argparse.ArgumentParser(description="OpenTPU-Benchmark Suite")
-    parser.add_argument("--test", choices=["all", "fp32", "bf16", "fp16", "int", "memory"], default="all",
+    parser.add_argument("--test", choices=["all", "fp32", "bf16", "fp16", "int", "memory", "interconnect", "pallas"], default="all",
                         help="Which benchmark suite to run (default: all)")
     parser.add_argument("--elements", type=int, default=4 * 1024 * 1024,
                         help="Number of elements for Vector ALU benchmarks (default: 4194304)")
@@ -44,6 +48,8 @@ def main():
                         help="Device index to run on (default: 0)")
     parser.add_argument("--json", action="store_true",
                         help="Output results in JSON format for automated agent evaluation")
+    parser.add_argument("--save-results", action="store_true",
+                        help="Save benchmark telemetry into results/ database")
     args = parser.parse_args()
 
     info = get_platform_info()
@@ -54,6 +60,7 @@ def main():
     target_device = info.devices[args.device_id]
     compute_results = []
     memory_results = []
+    interconnect_results = []
 
     if not args.json:
         print_banner(info)
@@ -155,42 +162,93 @@ def main():
         )
         memory_results.extend(mem_results)
 
-    # Output formatting
+    # 6. Interconnect (Host PCIe & Multi-Chip ICI) Benchmarks
+    if args.test in ["all", "interconnect"]:
+        if not args.json:
+            print(format_cell("Running Host PCIe & ICI Interconnect tests..."))
+        host_results = run_host_bandwidth_benchmark(
+            buffer_size_mb=min(args.buffer_mb, 256),
+            iterations=args.iterations,
+            warmup=args.warmup,
+            device=target_device,
+        )
+        interconnect_results.extend(host_results)
+
+        # Multi-chip ICI collective test
+        if info.device_count > 1 and info.is_tpu:
+            ici_res = run_ici_bandwidth_benchmark(
+                buffer_size_mb=min(args.buffer_mb, 256),
+                iterations=args.iterations,
+                warmup=args.warmup,
+            )
+            if ici_res:
+                interconnect_results.append(ici_res)
+
+    # 7. Low-Level Pallas / Mosaic Custom Kernel
+    if args.test in ["all", "pallas"]:
+        if not args.json:
+            print(format_cell("Running Pallas / Mosaic custom TPU kernel..."))
+        pallas_res = run_pallas_vector_benchmark(
+            n_elements=min(args.elements, 1048576),
+            iterations=args.iterations,
+            warmup=args.warmup,
+            device=target_device,
+        )
+        compute_results.append((pallas_res, info.spec.tflops_fp32_vpu))
+
+    out = {
+        "device": {
+            "name": info.spec.name,
+            "platform": info.platform,
+            "architecture": info.spec.architecture,
+            "device_count": info.device_count,
+            "device_id": args.device_id,
+        },
+        "compute_benchmarks": [
+            {
+                "name": r.name,
+                "precision": r.precision.strip(),
+                "operation": r.operation.strip(),
+                "throughput_tflops_or_tiops": r.tflops_per_sec,
+                "min_time_sec": r.min_time_sec,
+                "avg_time_sec": r.avg_time_sec,
+                "total_ops": r.total_flops,
+                "theoretical_peak": peak,
+                "efficiency_pct": (r.tflops_per_sec / peak * 100.0) if peak > 0 else 0.0,
+            }
+            for r, peak in compute_results
+        ],
+        "memory_benchmarks": [
+            {
+                "name": m.name,
+                "operation": m.operation.strip(),
+                "bandwidth_gb_per_sec": m.bandwidth_gb_per_sec,
+                "min_time_sec": m.min_time_sec,
+                "avg_time_sec": m.avg_time_sec,
+                "buffer_bytes": m.buffer_bytes,
+            }
+            for m in memory_results
+        ],
+        "interconnect_benchmarks": [
+            {
+                "name": ic.name,
+                "operation": ic.operation.strip(),
+                "bandwidth_gb_per_sec": ic.bandwidth_gb_per_sec,
+                "min_time_sec": ic.min_time_sec,
+                "avg_time_sec": ic.avg_time_sec,
+                "buffer_bytes": ic.buffer_bytes,
+                "pcie_gen": ic.pcie_gen,
+            }
+            for ic in interconnect_results
+        ],
+    }
+
+    if args.save_results:
+        save_path = save_benchmark_run(out)
+        if not args.json:
+            print(format_cell(f"Telemetry saved to {save_path}"))
+
     if args.json:
-        out = {
-            "device": {
-                "name": info.spec.name,
-                "platform": info.platform,
-                "architecture": info.spec.architecture,
-                "device_count": info.device_count,
-                "device_id": args.device_id,
-            },
-            "compute_benchmarks": [
-                {
-                    "name": r.name,
-                    "precision": r.precision.strip(),
-                    "operation": r.operation.strip(),
-                    "throughput_tflops_or_tiops": r.tflops_per_sec,
-                    "min_time_sec": r.min_time_sec,
-                    "avg_time_sec": r.avg_time_sec,
-                    "total_ops": r.total_flops,
-                    "theoretical_peak": peak,
-                    "efficiency_pct": (r.tflops_per_sec / peak * 100.0) if peak > 0 else 0.0,
-                }
-                for r, peak in compute_results
-            ],
-            "memory_benchmarks": [
-                {
-                    "name": m.name,
-                    "operation": m.operation.strip(),
-                    "bandwidth_gb_per_sec": m.bandwidth_gb_per_sec,
-                    "min_time_sec": m.min_time_sec,
-                    "avg_time_sec": m.avg_time_sec,
-                    "buffer_bytes": m.buffer_bytes,
-                }
-                for m in memory_results
-            ]
-        }
         print(json.dumps(out, indent=2))
     else:
         line = "-" * 77
@@ -203,6 +261,10 @@ def main():
             print(f"|{line}|")
             for m in memory_results:
                 print_memory_row(m)
+        if interconnect_results:
+            print(f"|{line}|")
+            for ic in interconnect_results:
+                print_interconnect_row(ic)
         print_footer()
 
 if __name__ == "__main__":

@@ -1,0 +1,213 @@
+[
+  {
+    "timestamp": "2026-10-09T20:20:59.737285+00:00",
+    "device": {
+      "name": "Host CPU (Emulation / Fallback)",
+      "platform": "cpu",
+      "architecture": "x86_64/ARM",
+      "device_count": 1,
+      "device_id": 0
+    },
+    "compute_benchmarks": [
+      {
+        "name": "FP32 Compute (Vector ALU)",
+        "precision": "FP32",
+        "operation": "float , fma",
+        "throughput_tflops_or_tiops": 0.004017794503051522,
+        "min_time_sec": 0.06681164399924455,
+        "avg_time_sec": 0.06856144349876558,
+        "total_ops": 268435456.0,
+        "theoretical_peak": 1.0,
+        "efficiency_pct": 0.4017794503051522
+      },
+      {
+        "name": "FP32 Compute (Matrix GEMM)",
+        "precision": "FP32",
+        "operation": "float , gemm",
+        "throughput_tflops_or_tiops": 0.11479724804463945,
+        "min_time_sec": 0.0002922929998021573,
+        "avg_time_sec": 0.00034746600067592226,
+        "total_ops": 33554432.0,
+        "theoretical_peak": 1.0,
+        "efficiency_pct": 11.479724804463945
+      },
+      {
+        "name": "BF16 Compute (Matrix GEMM)",
+        "precision": "BF16",
+        "operation": "bfloat, mxu",
+        "throughput_tflops_or_tiops": 0.08705939485896051,
+        "min_time_sec": 0.0003854200003843289,
+        "avg_time_sec": 0.00048080899978231173,
+        "total_ops": 33554432.0,
+        "theoretical_peak": 1.0,
+        "efficiency_pct": 8.705939485896051
+      },
+      {
+        "name": "BF16 Compute (Vector ALU)",
+        "precision": "BF16",
+        "operation": "bfloat, fma",
+        "throughput_tflops_or_tiops": 0.0026667807946295927,
+        "min_time_sec": 0.10065898799803108,
+        "avg_time_sec": 0.10190013799910957,
+        "total_ops": 268435456.0,
+        "theoretical_peak": 1.0,
+        "efficiency_pct": 0.2666780794629593
+      },
+      {
+        "name": "FP16 Compute (Matrix GEMM)",
+        "precision": "FP16",
+        "operation": "half  , mxu",
+        "throughput_tflops_or_tiops": 0.08317287261612,
+        "min_time_sec": 0.0004034300000057556,
+        "avg_time_sec": 0.0004524514988588635,
+        "total_ops": 33554432.0,
+        "theoretical_peak": 1.0,
+        "efficiency_pct": 8.317287261612
+      },
+      {
+        "name": "FP16 Compute (Vector ALU)",
+        "precision": "FP16",
+        "operation": "half  , fma",
+        "throughput_tflops_or_tiops": 0.0071283630825855265,
+        "min_time_sec": 0.03765737700086902,
+        "avg_time_sec": 0.037889071500103455,
+        "total_ops": 268435456.0,
+        "theoretical_peak": 1.0,
+        "efficiency_pct": 0.7128363082585526
+      },
+      {
+        "name": "INT32 Compute (Vector ALU)",
+        "precision": "INT32",
+        "operation": "int   , a*b+c",
+        "throughput_tflops_or_tiops": 0.003789981758100508,
+        "min_time_sec": 0.070827638002811,
+        "avg_time_sec": 0.07099963600194314,
+        "total_ops": 268435456.0,
+        "theoretical_peak": 1.0,
+        "efficiency_pct": 0.3789981758100508
+      },
+      {
+        "name": "INT8 Compute (Matrix GEMM / dp4a)",
+        "precision": "INT8",
+        "operation": "int8  , mxu",
+        "throughput_tflops_or_tiops": 0.12096831018919944,
+        "min_time_sec": 0.00027738200151361525,
+        "avg_time_sec": 0.0003284025005996227,
+        "total_ops": 33554432.0,
+        "theoretical_peak": 1.0,
+        "efficiency_pct": 12.096831018919945
+      }
+    ],
+    "memory_benchmarks": [
+      {
+        "name": "Memory Bandwidth (coalesced read)",
+        "operation": "coalesced read",
+        "bandwidth_gb_per_sec": 42.19430713863689,
+        "min_time_sec": 0.000795235999248689,
+        "avg_time_sec": 0.0008950489991548238,
+        "buffer_bytes": 33554432
+      },
+      {
+        "name": "Memory Bandwidth (coalesced write)",
+        "operation": "coalesced      write",
+        "bandwidth_gb_per_sec": 19.348997704667006,
+        "min_time_sec": 0.0034683379999478348,
+        "avg_time_sec": 0.003638649999629706,
+        "buffer_bytes": 67108864
+      }
+    ],
+    "interconnect_benchmarks": [
+      {
+        "name": "PCIe Bandwidth (send)",
+        "operation": "send",
+        "bandwidth_gb_per_sec": 2.2616250034455474,
+        "min_time_sec": 0.014836425998510094,
+        "avg_time_sec": 0.014919256998837227,
+        "buffer_bytes": 33554432,
+        "pcie_gen": null
+      },
+      {
+        "name": "PCIe Bandwidth (receive)",
+        "operation": "receive",
+        "bandwidth_gb_per_sec": 15087.411257857515,
+        "min_time_sec": 2.2240019461605698e-06,
+        "avg_time_sec": 2.6620000426191837e-06,
+        "buffer_bytes": 33554432,
+        "pcie_gen": null
+      },
+      {
+        "name": "PCIe Bandwidth (bidirectional)",
+        "operation": "bidirectional",
+        "bandwidth_gb_per_sec": 4.449511871623152,
+        "min_time_sec": 0.0075411489997350145,
+        "avg_time_sec": 0.007689992498853826,
+        "buffer_bytes": 33554432,
+        "pcie_gen": "(Gen6 x16)"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-10-09T20:24:10.777058+00:00",
+    "device": {
+      "name": "Google TPU v5e (v5 lite)",
+      "platform": "tpu",
+      "architecture": "Viperfish (v5e / v5 lite)",
+      "device_count": 1,
+      "device_id": 0
+    },
+    "compute_benchmarks": [
+      {
+        "name": "FP32 Vector",
+        "operation": "float , fma",
+        "throughput_tflops_or_tiops": 1.293
+      },
+      {
+        "name": "FP32 GEMM",
+        "operation": "float , gemm",
+        "throughput_tflops_or_tiops": 150.294
+      },
+      {
+        "name": "BF16 GEMM",
+        "operation": "bfloat, mxu",
+        "throughput_tflops_or_tiops": 147.547
+      },
+      {
+        "name": "BF16 Vector",
+        "operation": "bfloat, fma",
+        "throughput_tflops_or_tiops": 1.712
+      },
+      {
+        "name": "FP16 GEMM",
+        "operation": "half  , mxu",
+        "throughput_tflops_or_tiops": 151.288
+      },
+      {
+        "name": "FP16 Vector",
+        "operation": "half  , fma",
+        "throughput_tflops_or_tiops": 1.489
+      },
+      {
+        "name": "INT32 Vector",
+        "operation": "int   , a*b+c",
+        "throughput_tflops_or_tiops": 1.28
+      },
+      {
+        "name": "INT8 GEMM",
+        "operation": "int8  , mxu",
+        "throughput_tflops_or_tiops": 256.972
+      }
+    ],
+    "memory_benchmarks": [
+      {
+        "name": "Coalesced Read",
+        "operation": "coalesced read",
+        "bandwidth_gb_per_sec": 602.61
+      },
+      {
+        "name": "Coalesced Write",
+        "operation": "coalesced      write",
+        "bandwidth_gb_per_sec": 584.07
+      }
+    ]
+  }
+]

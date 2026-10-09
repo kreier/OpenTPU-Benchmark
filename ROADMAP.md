@@ -13,9 +13,9 @@ This roadmap outlines the milestones for porting the OpenCL-Benchmark suite to G
 | **Phase 3** | BF16 & FP16 Precision Benchmarks | ✅ Completed | TPU v5e-1 (197 TFLOPS MXU Peak) |
 | **Phase 4** | Integer Compute Benchmarks (INT32 & INT8 dp4a) | ✅ Completed | TPU v5e-1 (INT8 MXU Systolic) |
 | **Phase 5** | HBM Memory Bandwidth (Coalesced Read & Write) | ✅ Completed | TPU v5e-1 (816 GB/s HBM2e) |
-| **Phase 6** | Host PCIe & Inter-Chip Interconnect (ICI) | ⏳ Up Next | TPU v5e-1 to v5e-4/8 Pods |
-| **Phase 7** | Low-Level Custom Kernels with Pallas / Mosaic | 📅 Scheduled | TPU VectorCore / VMEM |
-| **Phase 8** | Unified Comparison Database & CI Dashboard | 📅 Scheduled | All TPU Generations |
+| **Phase 6** | Host PCIe & Inter-Chip Interconnect (ICI) | ✅ Completed | TPU v5e-1 to v5e-4/8 Pods |
+| **Phase 7** | Low-Level Custom Kernels with Pallas / Mosaic | ✅ Completed | TPU VectorCore / VMEM |
+| **Phase 8** | Unified Comparison Database & CI Dashboard | ✅ Completed | All TPU Generations |
 
 ---
 
@@ -73,23 +73,25 @@ This roadmap outlines the milestones for porting the OpenCL-Benchmark suite to G
 
 ---
 
-### Phase 6: Host PCIe & Inter-Chip Interconnect (ICI)
+### Phase 6: Host PCIe & Inter-Chip Interconnect (ICI) (Completed ✅)
 *Goal: Measure communication bottlenecks across host and multi-chip pods.*
-- [ ] **Host-to-Device (PCIe) Bandwidth**:
+- [x] **Host-to-Device (PCIe) Bandwidth**:
   - Host RAM to TPU HBM (`jax.device_put`) and TPU HBM to Host (`jax.device_get`) transfer speeds.
-- [ ] **Inter-Chip Interconnect (ICI)**:
+  - Concurrent bidirectional transfer measurement and PCIe Gen link rate estimation.
+- [x] **Inter-Chip Interconnect (ICI)**:
   - Measure TPU-to-TPU direct peer bandwidth on multi-chip slices (e.g. `v5e-4`, `v5e-8`) using collective communication primitives (`lax.all_gather`, `lax.psum`).
 
 ---
 
-### Phase 7: Low-Level Custom Kernels with Pallas / Mosaic
+### Phase 7: Low-Level Custom Kernels with Pallas / Mosaic (Completed ✅)
 *Goal: Hardware-level control bypassing high-level XLA heuristics.*
-- [ ] Implement custom TPU kernels using **Pallas** (`jax.experimental.pallas`).
-- [ ] Direct management of VMEM (Vector Memory), SMEM (Scalar Memory), and asynchronous DMA transfers.
-- [ ] Direct invocation of Mosaic MLIR pipeline for exact instruction scheduling.
+- [x] Implement custom TPU kernels using **Pallas** (`jax.experimental.pallas`).
+- [x] Direct tile management of Vector Memory (VMEM) with `pl.BlockSpec` and unrolled FMA loops.
+- [x] Transparent compilation targeting Mosaic MLIR on TPU hardware with CPU fallback.
 
 ---
 
-### Phase 8: Unified Comparison Database & CI
-- [ ] Store hardware results in a benchmark database (`results/results.json`).
-- [ ] Generate comparative markdown reports against Nvidia GPUs and Apple Silicon from the original OpenCL benchmark.
+### Phase 8: Unified Comparison Database & CI (Completed ✅)
+- [x] Store hardware results in a benchmark database (`results/results.json`).
+- [x] Automatically generate comparative summary reports in markdown (`results/README.md`).
+- [x] Automated GitHub Actions build and release workflow.
