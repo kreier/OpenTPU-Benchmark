@@ -170,29 +170,38 @@
   <div class="card">
     <h2>📊 Benchmark Output Format</h2>
     <p>Maintains 100% visual layout parity with the original OpenCL-Benchmark ASCII frame:</p>
-    <pre class="ascii-box">.-----------------------------------------------------------------------------.
-| Device: Google TPU v5e (v5 lite)                                              |
-| Platform: TPU | Cores/Chips: 1 | Architecture: Viperfish (v5e / v5 lite)      |
-| HBM Capacity: 16.0 GB | HBM Peak Bandwidth: 816 GB/s                          |
-| Peak Spec: FP32 VPU: 12.3 TFLOPS | BF16 MXU: 197.0 TFLOPS                     |
+    <pre class="ascii-box">.------------------------- OpenTPU Benchmark v0.3.4 --------------------------.
+| Device: Google TPU v5e (v5 lite)                                            |
+| Platform: TPU | Cores/Chips: 1 | Architecture: Viperfish (v5e / v5 lite)    |
+| HBM Capacity: 16.0 GB | HBM Peak Bandwidth: 816 GB/s                        |
+| Peak Spec: FP32 VPU: 12.3 TFLOPS | BF16 MXU: 197.0 TFLOPS                   |
 |-----------------------------------------------------------------------------|
-| FP64    Compute   (double, fma  )                      not supported          |
-| FP32    Compute   (float , fma  )               1.290 TFLOPs/s (1/8 )         |
-| FP32    Compute   (float , gemm )             150.891 TFLOPs/s (2/3 )         |
-| BF16    Compute   (bfloat, mxu  )             151.240 TFLOPs/s (2/3 )         |
-| BF16    Compute   (bfloat, fma  )               1.713 TFLOPs/s (1/16)         |
-| FP16    Compute   (half  , mxu  )             151.312 TFLOPs/s (2/3 )         |
-| FP16    Compute   (half  , fma  )               1.489 TFLOPs/s (1/8 )         |
-| INT32   Compute   (int   , a*b+c)               1.280  TIOPs/s (1/8 )         |
-| INT8    Compute   (int8  , mxu  )             256.972  TIOPs/s ( 1x )         |
-| FP32    Compute   (pallas, fma  )               1.285 TFLOPs/s (1/8 )         |
+| JIT compiling and warming up kernels...                                     |
+| Running FP32 Vector ALU & Matrix GEMM...                                    |
+| Running BF16 Matrix GEMM & Vector ALU...                                    |
+| Running FP16 Matrix GEMM & Vector ALU...                                    |
+| Running INT32 Vector & INT8 Matrix GEMM...                                  |
+| Running HBM Memory Bandwidth tests...                                       |
+| Running Host PCIe & ICI Interconnect tests...                               |
+| Running Pallas / Mosaic custom TPU kernel...                                |
 |-----------------------------------------------------------------------------|
-| Memory Bandwidth (coalesced read      )                           602.61 GB/s |
-| Memory Bandwidth (coalesced      write)                           584.07 GB/s |
+| FP64   Compute   (double, fma  )                       not supported        |
+| FP32   Compute   (float , fma  )                      1.293 TFLOPs/s (1/8 ) |
+| FP32   Compute   (float , gemm )                    149.398 TFLOPs/s (2/3 ) |
+| BF16   Compute   (bfloat, mxu  )                    148.016 TFLOPs/s (2/3 ) |
+| BF16   Compute   (bfloat, fma  )                      1.719 TFLOPs/s (1/16) |
+| FP16   Compute   (half  , mxu  )                    150.382 TFLOPs/s (2/3 ) |
+| FP16   Compute   (half  , fma  )                      1.501 TFLOPs/s (1/16) |
+| INT32  Compute   (int   , a*b+c)                      1.292  TIOPs/s (1/8 ) |
+| INT8   Compute   (int8  , mxu  )                    257.482  TIOPs/s ( 1x ) |
+| FP32   Compute   (pallas, fma  )                      0.438 TFLOPs/s (1/32) |
 |-----------------------------------------------------------------------------|
-| PCIe    Bandwidth (send                 )                           7.42 GB/s |
-| PCIe    Bandwidth (   receive           )                          12.80 GB/s |
-| PCIe    Bandwidth (        bidirectional)      (Gen4 x16)          16.35 GB/s |
+| Memory Bandwidth ( coalesced read      )                        578.18 GB/s |
+| Memory Bandwidth (coalesced      write )                        578.40 GB/s |
+|-----------------------------------------------------------------------------|
+| PCIe   Bandwidth (send                 )                          6.76 GB/s |
+| PCIe   Bandwidth (   receive           )                         22.25 GB/s |
+| PCIe   Bandwidth (        bidirectional)            (Gen4 x16)   13.35 GB/s |
 '-----------------------------------------------------------------------------'</pre>
   </div>
 
@@ -215,19 +224,19 @@
           <td><span class="badge badge-tpu">TPU</span> Google TPU v5e-1</td>
           <td>Viperfish (v5 lite)</td>
           <td>1.29 TFLOPs/s</td>
-          <td>150.9 TFLOPs/s</td>
-          <td>151.2 TFLOPs/s</td>
-          <td>257.0 TIOPs/s</td>
-          <td>602.6 GB/s</td>
+          <td>149.4 TFLOPs/s</td>
+          <td>148.0 TFLOPs/s</td>
+          <td>257.5 TIOPs/s</td>
+          <td>578.2 GB/s</td>
         </tr>
         <tr>
           <td><span class="badge badge-cpu">CPU</span> Host CPU Emulation</td>
           <td>x86_64 / ARM</td>
-          <td>0.005 TFLOPs/s</td>
-          <td>0.138 TFLOPs/s</td>
-          <td>0.127 TFLOPs/s</td>
-          <td>0.133 TIOPs/s</td>
-          <td>33.4 GB/s</td>
+          <td>0.006 TFLOPs/s</td>
+          <td>0.042 TFLOPs/s</td>
+          <td>0.027 TFLOPs/s</td>
+          <td>0.039 TIOPs/s</td>
+          <td>37.0 GB/s</td>
         </tr>
       </tbody>
     </table>

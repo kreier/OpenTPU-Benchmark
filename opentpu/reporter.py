@@ -38,8 +38,15 @@ def format_cell(text: str, width: int = 75) -> str:
 
 
 def print_banner(info: TPUPlatformInfo):
+    from opentpu import __version__
+    title = f" OpenTPU Benchmark v{__version__} "
+    total_width = 79
+    hyphens_total = total_width - 2 - len(title)
+    left_h = hyphens_total // 2
+    right_h = hyphens_total - left_h
+    top_line = f".{'-' * left_h}{title}{'-' * right_h}."
     line = "-" * 77
-    print(f".{line}.")
+    print(top_line)
     print(format_cell(f"Device: {info.spec.name}"))
     print(format_cell(f"Platform: {info.platform.upper()} | Cores/Chips: {info.device_count} | Architecture: {info.spec.architecture}"))
     print(format_cell(f"HBM Capacity: {info.spec.hbm_capacity_gb:.1f} GB | HBM Peak Bandwidth: {info.spec.hbm_bandwidth_gbs:.0f} GB/s"))
