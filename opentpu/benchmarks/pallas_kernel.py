@@ -64,10 +64,10 @@ def run_pallas_vector_benchmark(
             out_shape=jax.ShapeDtypeStruct((n_elements,), jnp.float32),
             grid=(num_blocks,),
             in_specs=[
-                pl.BlockSpec(block_shape=(block_size,), index_map=lambda i: (i * block_size,)),
-                pl.BlockSpec(block_shape=(block_size,), index_map=lambda i: (i * block_size,)),
+                pl.BlockSpec(block_shape=(block_size,), index_map=lambda i: (i,)),
+                pl.BlockSpec(block_shape=(block_size,), index_map=lambda i: (i,)),
             ],
-            out_specs=pl.BlockSpec(block_shape=(block_size,), index_map=lambda i: (i * block_size,)),
+            out_specs=pl.BlockSpec(block_shape=(block_size,), index_map=lambda i: (i,)),
             interpret=interpret,
         )
 
