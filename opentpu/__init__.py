@@ -35,3 +35,8 @@ def patch_libtpu_version_check():
 patch_libtpu_version_check()
 
 __version__ = "0.3.5"
+
+from opentpu.main import main
+
+__all__ = ["main", "__version__"]
+

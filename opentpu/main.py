@@ -30,7 +30,7 @@ from opentpu.reporter import (
     format_cell,
 )
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description="OpenTPU-Benchmark Suite")
     parser.add_argument("--test", choices=["all", "fp32", "bf16", "fp16", "int", "memory", "interconnect", "pallas"], default="all",
                         help="Which benchmark suite to run (default: all)")
@@ -50,7 +50,7 @@ def main():
                         help="Output results in JSON format for automated agent evaluation")
     parser.add_argument("--save-results", action="store_true",
                         help="Save benchmark telemetry into results/ database")
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args(argv)
 
     info = get_platform_info()
     if args.device_id >= len(info.devices):
