@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "opentpu-benchmark"
-version = "0.3.4"
+version = "0.3.5"
 description = "High-performance microbenchmark suite for Google TPUs (v5e, v4, v5p, v6e)"
 readme = "README.md"
 authors = [{ name = "kreier" }]

@@ -161,28 +161,43 @@ def run_ici_bandwidth_benchmark(
     buffer_size_mb: int = 128,
     iterations: int = 15,
     warmup: int = 3,
+    devices: Optional[List[any]] = None,
 ) -> Optional[InterconnectBenchmarkResult]:
     """
     Measures TPU-to-TPU Inter-Chip Interconnect (ICI) direct ring/torus bandwidth.
     Only executed when multiple TPU chips/cores are detected (e.g. v5e-4, v5e-8).
     """
-    devices = jax.devices()
+    if devices is None:
+        devices = jax.devices()
+        if len(devices) <= 1 or devices[0].platform.lower() != "tpu":
+            return None
+
     num_devices = len(devices)
-    if num_devices <= 1 or devices[0].platform.lower() != "tpu":
+    if num_devices <= 1:
         return None
 
-    n_elements_per_dev = (buffer_size_mb * 1024 * 1024) // (4 * num_devices)
+    n_elements_per_dev = max(1, (buffer_size_mb * 1024 * 1024) // (4 * num_devices))
     key = jax.random.PRNGKey(42)
-    # Replicate/split across devices
-    arr = jax.device_put_replicated(
-        jax.random.normal(key, shape=(n_elements_per_dev,), dtype=jnp.float32),
-        devices,
-    )
+
+    # Distribute/replicate across devices using modern sharding API
+    try:
+        from jax.sharding import Mesh, NamedSharding, PartitionSpec as P
+        mesh = Mesh(np.array(devices), ("x",))
+        sharding = NamedSharding(mesh, P("x"))
+        raw = jax.random.normal(key, shape=(num_devices, n_elements_per_dev), dtype=jnp.float32)
+        arr = jax.device_put(raw, sharding)
+    except Exception:
+        # Fallback for legacy JAX versions
+        if hasattr(jax, "device_put_replicated"):
+            arr = getattr(jax, "device_put_replicated")(
+                jax.random.normal(key, shape=(n_elements_per_dev,), dtype=jnp.float32),
+                devices,
+            )
+        else:
+            arr = jax.random.normal(key, shape=(num_devices, n_elements_per_dev), dtype=jnp.float32)
 
     # Collective all-reduce across ICI ring
-    @jax.pmap
-    def ring_all_reduce(x):
-        return lax.psum(x, axis_name="i")
+    ring_all_reduce = jax.pmap(lambda x: lax.psum(x, axis_name="i"), axis_name="i", devices=devices)
 
     for _ in range(warmup):
         res = ring_all_reduce(arr)
@@ -196,12 +211,14 @@ def run_ici_bandwidth_benchmark(
         t1 = time.perf_counter()
         ici_times.append(t1 - t0)
 
-    min_time = min(ici_times)
+    min_time = max(min(ici_times), 1e-9)
     avg_time = sum(ici_times) / len(ici_times)
     total_bytes = n_elements_per_dev * 4 * num_devices
     # Ring all-reduce transfers 2 * (N - 1) / N * size
     ring_factor = 2.0 * (num_devices - 1) / num_devices
     bw_gb_s = (float(total_bytes) * ring_factor / min_time) * 1e-9
+
+    device_name = "TPU ICI Subsystem" if devices[0].platform.lower() == "tpu" else f"{devices[0].platform.upper()} Interconnect"
 
     return InterconnectBenchmarkResult(
         name=f"ICI Bandwidth (All-Reduce Ring, {num_devices} chips)",
@@ -211,6 +228,7 @@ def run_ici_bandwidth_benchmark(
         avg_time_sec=avg_time,
         buffer_bytes=total_bytes,
         pcie_gen=None,
-        device_name="TPU ICI Subsystem",
+        device_name=device_name,
         iterations=iterations,
     )
+

@@ -7,7 +7,7 @@ from opentpu.benchmarks.bf16 import run_bf16_vector_benchmark, run_bf16_gemm_ben
 from opentpu.benchmarks.fp16 import run_fp16_vector_benchmark, run_fp16_gemm_benchmark
 from opentpu.benchmarks.integer import run_int8_gemm_benchmark, run_int32_vector_benchmark
 from opentpu.benchmarks.memory import run_memory_bandwidth_benchmark
-from opentpu.benchmarks.interconnect import run_host_bandwidth_benchmark, estimate_pcie_gen
+from opentpu.benchmarks.interconnect import run_host_bandwidth_benchmark, run_ici_bandwidth_benchmark, estimate_pcie_gen
 from opentpu.results_db import save_benchmark_run
 from opentpu.reporter import format_fraction
 
@@ -70,6 +70,29 @@ def test_host_interconnect_benchmark():
         assert r.bandwidth_gb_per_sec > 0
     assert estimate_pcie_gen(30.0) == "Gen4"
     assert estimate_pcie_gen(60.0) == "Gen5"
+
+    ici_res = run_ici_bandwidth_benchmark(buffer_size_mb=4, iterations=2, warmup=1)
+    if len(jax.devices()) <= 1 or jax.devices()[0].platform.lower() != "tpu":
+        assert ici_res is None
+    else:
+        assert ici_res is not None
+        assert ici_res.bandwidth_gb_per_sec > 0
+
+def test_ici_multi_device_execution():
+    import subprocess
+    import sys
+    code = """
+import jax
+from opentpu.benchmarks.interconnect import run_ici_bandwidth_benchmark
+devices = jax.devices()
+res = run_ici_bandwidth_benchmark(buffer_size_mb=4, iterations=2, warmup=1, devices=devices)
+assert res is not None
+assert res.bandwidth_gb_per_sec > 0
+"""
+    env = os.environ.copy()
+    env["XLA_FLAGS"] = "--xla_force_host_platform_device_count=2"
+    result = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True)
+    assert result.returncode == 0, f"Error running multi-device ICI test: {result.stderr}"
 
 def test_results_db(tmp_path):
     test_file = str(tmp_path / "test_results.json")

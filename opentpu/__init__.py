@@ -34,4 +34,4 @@ def patch_libtpu_version_check():
 
 patch_libtpu_version_check()
 
-__version__ = "0.3.4"
+__version__ = "0.3.5"

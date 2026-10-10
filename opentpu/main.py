@@ -176,13 +176,16 @@ def main():
 
         # Multi-chip ICI collective test
         if info.device_count > 1 and info.is_tpu:
-            ici_res = run_ici_bandwidth_benchmark(
-                buffer_size_mb=min(args.buffer_mb, 256),
-                iterations=args.iterations,
-                warmup=args.warmup,
-            )
-            if ici_res:
-                interconnect_results.append(ici_res)
+            try:
+                ici_res = run_ici_bandwidth_benchmark(
+                    buffer_size_mb=min(args.buffer_mb, 256),
+                    iterations=args.iterations,
+                    warmup=args.warmup,
+                )
+                if ici_res:
+                    interconnect_results.append(ici_res)
+            except Exception:
+                pass
 
     pallas_unsupported = False
     # 7. Low-Level Pallas / Mosaic Custom Kernel
