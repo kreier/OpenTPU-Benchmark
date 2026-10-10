@@ -32,8 +32,8 @@ def format_fraction(percentage_of_peak: float) -> str:
     return f"({FRACTION_STRINGS[best_idx]})"
 
 
-def format_cell(text: str, width: int = 77) -> str:
-    """Pad string to fit inside OpenCL-Benchmark ASCII frame."""
+def format_cell(text: str, width: int = 75) -> str:
+    """Pad string to fit inside OpenCL-Benchmark ASCII frame (total 79 chars)."""
     return f"| {text.ljust(width)} |"
 
 
@@ -52,35 +52,47 @@ def print_result_row(result: BenchmarkResult, theoretical_peak_tflops: float):
     frac_str = format_fraction(percentage)
     unit = " TIOPs/s" if "INT" in result.precision else "TFLOPs/s"
     
-    label = f"{result.precision.ljust(7)} Compute   ({result.operation})"
-    val_str = f"{result.tflops_per_sec:10.3f} {unit}"
-    content = f"{label}   {val_str:>26} {frac_str}"
-    print(format_cell(content))
+    label = f"{result.precision.strip().ljust(6)} Compute   ({result.operation.strip().ljust(13)})"
+    flops_str = f"{result.tflops_per_sec:10.3f}".rjust(26)
+    row = f"| {label} {flops_str} {unit} {frac_str} |"
+    print(row)
 
 
 def print_unsupported_row(precision: str, operation: str, reason: str = "not supported"):
-    label = f"{precision.ljust(7)} Compute   ({operation})"
-    content = f"{label}                      {reason:>13}        "
-    print(format_cell(content))
+    label = f"{precision.strip().ljust(6)} Compute   ({operation.strip().ljust(13)})"
+    row = f"| {label}                       {reason.rjust(13)}        |"
+    print(row)
 
 
 def print_memory_row(result: MemoryBenchmarkResult):
-    label = f"Memory Bandwidth ({result.operation})"
-    bw_str = f"{result.bandwidth_gb_per_sec:10.2f} GB/s"
-    content = f"{label:<45}{bw_str:>32}"
-    print(format_cell(content))
+    op = result.operation.strip()
+    if op == "coalesced read":
+        label = "Memory Bandwidth ( coalesced read      )"
+    elif op == "coalesced write":
+        label = "Memory Bandwidth ( coalesced      write)"
+    else:
+        label = f"Memory Bandwidth ({result.operation.ljust(21)})"
+    bw_str = f"{result.bandwidth_gb_per_sec:10.2f}".rjust(29)
+    print(f"| {label} {bw_str} GB/s |")
 
 
 def print_interconnect_row(result: InterconnectBenchmarkResult):
-    prefix = "ICI " if "ICI" in result.name else "PCIe"
-    label = f"{prefix:<7} Bandwidth ({result.operation})"
-    bw_str = f"{result.bandwidth_gb_per_sec:10.2f} GB/s"
+    prefix = "ICI  " if "ICI" in result.name else "PCIe "
+    op = result.operation.strip()
+    bw_str = f"{result.bandwidth_gb_per_sec:10.2f}".rjust(29)
     if result.pcie_gen:
-        gen_str = f"{result.pcie_gen:>12}"
-        content = f"{label:<45}{gen_str}{bw_str:>20}"
+        label = f"{prefix}  Bandwidth (        bidirectional)"
+        gen_str = f"{result.pcie_gen}"
+        num_str = f"{result.bandwidth_gb_per_sec:.2f}".rjust(8)
+        print(f"| {label}            {gen_str}{num_str} GB/s |")
     else:
-        content = f"{label:<45}{bw_str:>32}"
-    print(format_cell(content))
+        if op == "send":
+            label = f"{prefix}  Bandwidth (send                 )"
+        elif op == "receive":
+            label = f"{prefix}  Bandwidth (   receive           )"
+        else:
+            label = f"{prefix}  Bandwidth ({op.ljust(21)})"
+        print(f"| {label} {bw_str} GB/s |")
 
 
 def print_footer():
