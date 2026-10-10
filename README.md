@@ -10,10 +10,10 @@ For the complete development and precision roadmap, see [ROADMAP.md](ROADMAP.md)
 Inside a Google Colab notebook with a TPU runtime (e.g. TPU v5e / v5 lite):
 
 ```bash
-# Option A: Fastest 1-Liner (Downloads ~36 KiB binary and runs immediately in <1s)
-!curl -sSL https://raw.githubusercontent.com/kreier/OpenTPU-Benchmark/master/run_colab.sh | bash
+# Option A: Fastest & Shortest One-Liner (via GitHub Pages, runs in <1s)
+!curl -sSL https://kreier.github.io/OpenTPU-Benchmark/run.sh | bash
 
-# Option B: Direct install via pip (instant with --no-deps)
+# Option B: Direct install via pip
 !pip install -q --no-deps git+https://github.com/kreier/OpenTPU-Benchmark.git
 !opentpu
 

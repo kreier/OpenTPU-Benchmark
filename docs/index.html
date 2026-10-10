@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenTPU-Benchmark | Google TPU Performance Suite</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --heading: #f0f6fc;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --code-bg: #0b0e14;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+    }
+    header h1 {
+      color: var(--heading);
+      margin: 0 0 0.5rem 0;
+      font-size: 2.2rem;
+    }
+    header p {
+      color: #8b949e;
+      font-size: 1.1rem;
+      margin: 0 auto;
+      max-width: 650px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .card h2 {
+      margin-top: 0;
+      color: var(--heading);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+      font-size: 1.4rem;
+    }
+    .install-box {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      position: relative;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.95rem;
+      color: #79c0ff;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.6rem;
+      background: #21262d;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 4px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .copy-btn:hover {
+      background: #30363d;
+      color: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.65rem 0.75rem;
+      text-align: left;
+    }
+    th {
+      background-color: #21262d;
+      color: var(--heading);
+    }
+    tr:nth-child(even) {
+      background-color: #12161c;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-tpu { background-color: rgba(56, 139, 253, 0.15); color: #58a6ff; }
+    .badge-cpu { background-color: rgba(139, 148, 158, 0.15); color: #8b949e; }
+    pre.ascii-box {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+      font-family: "Courier New", Courier, monospace;
+      color: #e6edf3;
+      font-size: 0.82rem;
+      overflow-x: auto;
+      line-height: 1.25;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #8b949e;
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>OpenTPU-Benchmark</h1>
+  <p>The Google TPU microbenchmark suite ported from OpenCL-Benchmark, targeting Cloud TPU v5e, v4, v5p, v6e and PJRT/JAX backends.</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>⚡ Quick Run in Google Colab & Linux</h2>
+    <p>Run directly in any Google Colab notebook cell with TPU runtime attached (or directly in a Cloud TPU VM bash shell):</p>
+
+    <div class="install-box">
+      <button class="copy-btn" onclick="navigator.clipboard.writeText('!curl -sSL https://kreier.github.io/OpenTPU-Benchmark/run.sh | bash')">Copy</button>
+      <code>!curl -sSL https://kreier.github.io/OpenTPU-Benchmark/run.sh | bash</code>
+    </div>
+
+    <p style="margin-top: 1rem; font-size: 0.9rem; color: #8b949e;">Or via pip:</p>
+    <div class="install-box">
+      <button class="copy-btn" onclick="navigator.clipboard.writeText('!pip install -q --no-deps git+https://github.com/kreier/OpenTPU-Benchmark.git\n!opentpu')">Copy</button>
+      <code>!pip install -q --no-deps git+https://github.com/kreier/OpenTPU-Benchmark.git<br>!opentpu</code>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📊 Benchmark Output Format</h2>
+    <p>Maintains 100% visual layout parity with the original OpenCL-Benchmark ASCII frame:</p>
+    <pre class="ascii-box">.-----------------------------------------------------------------------------.
+| Device: Google TPU v5e (v5 lite)                                              |
+| Platform: TPU | Cores/Chips: 1 | Architecture: Viperfish (v5e / v5 lite)      |
+| HBM Capacity: 16.0 GB | HBM Peak Bandwidth: 816 GB/s                          |
+| Peak Spec: FP32 VPU: 12.3 TFLOPS | BF16 MXU: 197.0 TFLOPS                     |
+|-----------------------------------------------------------------------------|
+| FP64    Compute   (double, fma  )                      not supported          |
+| FP32    Compute   (float , fma  )               1.290 TFLOPs/s (1/8 )         |
+| FP32    Compute   (float , gemm )             150.891 TFLOPs/s (2/3 )         |
+| BF16    Compute   (bfloat, mxu  )             151.240 TFLOPs/s (2/3 )         |
+| BF16    Compute   (bfloat, fma  )               1.713 TFLOPs/s (1/16)         |
+| FP16    Compute   (half  , mxu  )             151.312 TFLOPs/s (2/3 )         |
+| FP16    Compute   (half  , fma  )               1.489 TFLOPs/s (1/8 )         |
+| INT32   Compute   (int   , a*b+c)               1.280  TIOPs/s (1/8 )         |
+| INT8    Compute   (int8  , mxu  )             256.972  TIOPs/s ( 1x )         |
+| FP32    Compute   (pallas, fma  )               1.285 TFLOPs/s (1/8 )         |
+|-----------------------------------------------------------------------------|
+| Memory Bandwidth (coalesced read      )                           602.61 GB/s |
+| Memory Bandwidth (coalesced      write)                           584.07 GB/s |
+|-----------------------------------------------------------------------------|
+| PCIe    Bandwidth (send                 )                           7.42 GB/s |
+| PCIe    Bandwidth (   receive           )                          12.80 GB/s |
+| PCIe    Bandwidth (        bidirectional)      (Gen4 x16)          16.35 GB/s |
+'-----------------------------------------------------------------------------'</pre>
+  </div>
+
+  <div class="card">
+    <h2>🏆 Telemetry & Benchmark Results</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Device</th>
+          <th>Architecture</th>
+          <th>FP32 VPU</th>
+          <th>FP32 GEMM</th>
+          <th>BF16 MXU</th>
+          <th>INT8 MXU</th>
+          <th>HBM Read BW</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-tpu">TPU</span> Google TPU v5e-1</td>
+          <td>Viperfish (v5 lite)</td>
+          <td>1.29 TFLOPs/s</td>
+          <td>150.9 TFLOPs/s</td>
+          <td>151.2 TFLOPs/s</td>
+          <td>257.0 TIOPs/s</td>
+          <td>602.6 GB/s</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-cpu">CPU</span> Host CPU Emulation</td>
+          <td>x86_64 / ARM</td>
+          <td>0.005 TFLOPs/s</td>
+          <td>0.138 TFLOPs/s</td>
+          <td>0.127 TFLOPs/s</td>
+          <td>0.133 TIOPs/s</td>
+          <td>33.4 GB/s</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  <p>OpenTPU-Benchmark is maintained by <a href="https://github.com/kreier">kreier</a>. Ported from <a href="https://github.com/ProjectPhysX/OpenCL-Benchmark">ProjectPhysX/OpenCL-Benchmark</a>.</p>
+</footer>
+
+</body>
+</html>
