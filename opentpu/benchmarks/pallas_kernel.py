@@ -3,7 +3,6 @@ import time
 from typing import Optional
 import jax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
 from opentpu.benchmarks.fp32 import BenchmarkResult
 
 def patch_libtpu_version_check():
@@ -37,6 +36,10 @@ def run_pallas_vector_benchmark(
     Returns None if Pallas TPU backend is not supported by the environment.
     """
     patch_libtpu_version_check()
+    try:
+        from jax.experimental import pallas as pl
+    except Exception:
+        return None
 
     if device is None:
         device = jax.devices()[0]

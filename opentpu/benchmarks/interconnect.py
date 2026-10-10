@@ -76,18 +76,15 @@ def run_host_bandwidth_benchmark(
     # 2. Device to Host (receive)
     dev_buf = jax.device_put(host_data, device)
     dev_buf.block_until_ready()
+    host_dest = np.empty_like(host_data)
 
     for _ in range(warmup):
-        out = jax.device_get(dev_buf)
-        if device.platform == "cpu":
-            out = np.copy(dev_buf)
+        np.copyto(host_dest, dev_buf)
 
     receive_times = []
     for _ in range(iterations):
         t0 = time.perf_counter()
-        out = jax.device_get(dev_buf)
-        if device.platform == "cpu":
-            out = np.copy(dev_buf)
+        np.copyto(host_dest, dev_buf)
         t1 = time.perf_counter()
         receive_times.append(t1 - t0)
 
@@ -98,18 +95,22 @@ def run_host_bandwidth_benchmark(
     # 3. Bidirectional (Send + Receive simultaneously)
     half_bytes = total_bytes // 2
     half_host = host_data[: len(host_data) // 2]
-    half_dev = jax.device_put(host_data[: len(host_data) // 2], device)
+    half_dest = np.empty_like(half_host)
+    half_dev = jax.device_put(half_host, device)
     half_dev.block_until_ready()
+
+    for _ in range(warmup):
+        d_out = jax.device_put(half_host, device)
+        np.copyto(half_dest, half_dev)
+        d_out.block_until_ready()
 
     bidi_times = []
     for _ in range(iterations):
         t0 = time.perf_counter()
         # Transfer host -> device
         d_out = jax.device_put(half_host, device)
-        # Transfer device -> host
-        h_out = jax.device_get(half_dev)
-        if device.platform == "cpu":
-            h_out = np.copy(half_dev)
+        # Transfer device -> host into distinct host memory
+        np.copyto(half_dest, half_dev)
         d_out.block_until_ready()
         t1 = time.perf_counter()
         bidi_times.append(t1 - t0)

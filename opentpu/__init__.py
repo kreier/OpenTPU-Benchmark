@@ -14,4 +14,24 @@ os.environ.setdefault("GLOG_minloglevel", "2")
 warnings.filterwarnings("ignore", message=".*Transparent hugepages.*")
 warnings.filterwarnings("ignore", category=UserWarning, module=".*cloud_tpu_init.*")
 
-__version__ = "0.3.0"
+def patch_libtpu_version_check():
+    """
+    Patches JAX's internal libtpu semver check on Cloud TPU / Google Colab environments
+    where Google uses a custom internal TFRT build string without semver numbers.
+    Must be called before Pallas / Mosaic lowering is initialized.
+    """
+    try:
+        from jax._src import cloud_tpu_init
+        cloud_tpu_init.is_libtpu_at_least = lambda v: True
+    except Exception:
+        pass
+
+    try:
+        from jax._src.pallas.mosaic import lowering
+        lowering.is_libtpu_at_least = lambda v: True
+    except Exception:
+        pass
+
+patch_libtpu_version_check()
+
+__version__ = "0.3.1"
